@@ -1,0 +1,70 @@
+/*
+ * Design tokens — dark "control room" palette.
+ * Contrast verified (WCAG): ink-3 on panel 5.1:1, ink-2 8.3:1, accent 6.6:1,
+ * white on accent-strong 4.8:1, white on critical-strong 5.5:1.
+ * Status colours are reserved for state and always ship with icon + text.
+ */
+:root {
+  color-scheme: dark;
+
+  /* surfaces */
+  --bg-0: #0b0d12;
+  --bg-1: #11141b;
+  --bg-2: #171b24;
+  --bg-3: #1e2330;
+  --bg-4: #262c3a;
+  --stage: #07090c;
+  --line: #222836;
+  --line-strong: #313949;
+
+  /* ink */
+  --ink-1: #e8ecf3;
+  --ink-2: #a6afbf;
+  --ink-3: #7d879a;
+
+  /* interactive accent */
+  --accent: #5b9bff;
+  --accent-strong: #2f6fd6;
+  --accent-hover: #3a7ae2;
+  --accent-weak: rgba(91, 155, 255, 0.13);
+  --accent-line: rgba(91, 155, 255, 0.5);
+
+  /* status (fixed scale) */
+  --good: #0ca30c;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  --critical-strong: #c62f2f;
+  --critical-hover: #d73c3c;
+  --good-weak: rgba(12, 163, 12, 0.14);
+  --warning-weak: rgba(250, 178, 25, 0.13);
+  --critical-weak: rgba(208, 59, 59, 0.15);
+
+  /* map identity (validated categorical set) */
+  --c-robot: #3987e5;
+  --c-label: #199e70;
+  --c-laser: #d95926;
+
+  /* type */
+  --font-ui: Inter, 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 13px;
+  --fs-lg: 15px;
+  --fs-xl: 17px;
+
+  /* geometry */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --topbar-h: 56px;
+  --statusbar-h: 28px;
+  --side-w: 388px;
+  --pip-w: 300px;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.45), 0 6px 18px rgba(0, 0, 0, 0.28);
+  --shadow-2: 0 18px 48px rgba(0, 0, 0, 0.55), 0 3px 10px rgba(0, 0, 0, 0.4);
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
