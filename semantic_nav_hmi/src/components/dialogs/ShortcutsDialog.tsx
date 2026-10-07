@@ -15,6 +15,7 @@ const GROUPS: { title: string; rows: [string[], string][] }[] = [
       [['3'], 'Label'],
       [['4'], 'Command'],
       [['C'], 'Swap camera and map'],
+      [['+', '−', '0'], 'Zoom in / out / reset the view in front'],
       [['?'], 'This help'],
     ],
   },

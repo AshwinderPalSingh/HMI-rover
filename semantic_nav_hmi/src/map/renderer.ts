@@ -211,8 +211,24 @@ const overlaps = (a: Box, b: Box) => a.x < b.x + b.w && a.x + a.w > b.x && a.y <
 
 // ── scene ─────────────────────────────────────────────────────────────────
 
+/**
+ * Shift the view centre so the world→device translation lands on whole device
+ * pixels. Thin one-cell walls otherwise shimmer when the view moves by
+ * fractions of a pixel (robot-follow with odometry noise, slow pans).
+ */
+function snapView(view: View, size: Size, dpr: number): View {
+  const ex = dpr * (size.w / 2 - view.cx * view.ppm);
+  const ey = dpr * (size.h / 2 + view.cy * view.ppm);
+  return {
+    ppm: view.ppm,
+    cx: (size.w / 2 - Math.round(ex) / dpr) / view.ppm,
+    cy: (Math.round(ey) / dpr - size.h / 2) / view.ppm,
+  };
+}
+
 export function renderScene(ctx: CanvasRenderingContext2D, sc: Scene): void {
-  const { view, size, dpr } = sc;
+  const { size, dpr } = sc;
+  const view = snapView(sc.view, size, dpr);
   const S = (x: number, y: number) => worldToScreen(view, size, x, y);
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);

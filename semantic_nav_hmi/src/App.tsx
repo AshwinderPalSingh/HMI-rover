@@ -48,6 +48,15 @@ function mapCommand(cmd: string) {
   window.dispatchEvent(new CustomEvent('map-command', { detail: cmd }));
 }
 
+/** Zoom keys act on whichever view is in front. */
+function viewCommand(cmd: 'zoom-in' | 'zoom-out' | 'fit') {
+  if (app().primary === 'camera') {
+    window.dispatchEvent(new CustomEvent('camera-command', { detail: cmd === 'fit' ? 'reset' : cmd }));
+  } else {
+    mapCommand(cmd);
+  }
+}
+
 function onKeyDown(e: KeyboardEvent) {
   const s = app();
   const typing = isTyping(e);
@@ -97,15 +106,15 @@ function onKeyDown(e: KeyboardEvent) {
       if (s.pose) s.setFollow(!s.followRobot);
       break;
     case '0':
-      mapCommand('fit');
+      viewCommand('fit');
       break;
     case '+':
     case '=':
-      mapCommand('zoom-in');
+      viewCommand('zoom-in');
       break;
     case '-':
     case '_':
-      mapCommand('zoom-out');
+      viewCommand('zoom-out');
       break;
     case 'c':
       s.swapViews();

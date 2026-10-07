@@ -201,24 +201,35 @@ export function MapView({ role }: { role: Role }) {
       const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
       sizeRef.current = { w: Math.max(1, r.width), h: Math.max(1, r.height) };
       dprRef.current = dpr;
-      canvas.width = Math.round(r.width * dpr);
-      canvas.height = Math.round(r.height * dpr);
-      canvas.style.width = `${r.width}px`;
-      canvas.style.height = `${r.height}px`;
-      if (!fittedRef.current) fitToContent();
-      requestRender();
+      const cw = Math.round(r.width * dpr);
+      const ch = Math.round(r.height * dpr);
+      // Resizing a canvas clears it: only do it when the size really changed,
+      // and repaint right here (before the browser paints) so it never blinks
+      if (canvas.width !== cw || canvas.height !== ch) {
+        canvas.width = cw;
+        canvas.height = ch;
+        canvas.style.width = `${r.width}px`;
+        canvas.style.height = `${r.height}px`;
+        if (!fittedRef.current) fitToContent();
+        dirtyRef.current = false;
+        draw();
+      } else if (!fittedRef.current) {
+        fitToContent();
+      }
       bumpOverlay(true);
     });
     ro.observe(wrap);
     return () => ro.disconnect();
-  }, [bumpOverlay, fitToContent, requestRender]);
+  }, [bumpOverlay, draw, fitToContent]);
 
   // live data → redraw
   useEffect(() => {
     const off = liveChanged.on((ch) => {
       if (ch === 'tf') {
         const r = robotInFixedFrame();
-        if (poseChanged(lastRobotRef.current, r?.pose ?? null)) {
+        // redraw only for movement you could see (~¼ px or ~0.3°), not odometry noise
+        const tol = 0.25 / viewRef.current.ppm;
+        if (poseChanged(lastRobotRef.current, r?.pose ?? null, tol, 0.005)) {
           lastRobotRef.current = r?.pose ?? null;
           if (!fittedRef.current && r) fitToContent();
           requestRender();
@@ -417,10 +428,7 @@ export function MapView({ role }: { role: Role }) {
   };
 
   const onPointerUp = (e: ReactPointerEvent<HTMLCanvasElement>) => {
-    if (compact) {
-      app().swapViews();
-      return;
-    }
+    if (compact) return;
     const p = local(e);
     pointersRef.current.delete(e.pointerId);
     const g = gestureRef.current;
@@ -570,7 +578,7 @@ export function MapView({ role }: { role: Role }) {
   if (compact) {
     return (
       <div ref={wrapRef} className="mapview mapview--pip">
-        <canvas ref={canvasRef} onPointerUp={onPointerUp} aria-label="Map overview — click to enlarge" role="button" />
+        <canvas ref={canvasRef} aria-hidden />
         {!hasMap && !hasPose && <div className="pip-empty">No map yet</div>}
       </div>
     );

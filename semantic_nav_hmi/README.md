@@ -9,7 +9,8 @@ keep-out zones — from any browser on the robot's network. No installs on the o
 ## Highlights
 
 - **Four modes, one screen** — Drive · Map · Label · Command, each with the right view (camera or map)
-  in front and the other as picture-in-picture.
+  in front and the other as picture-in-picture. Drag the picture-in-picture anywhere, resize it from its
+  corner, click it to swap. The camera can be zoomed (wheel, pinch, + / −) and dragged around.
 - **Live 2D map** — occupancy grid, robot footprint from TF, laser returns, Nav2's planned path, goal marker,
   labelled places and hatched keep-out zones. Pan, zoom, pinch, follow robot, layers.
 - **Map tools** — click-and-drag navigation goals with heading, AMCL pose estimate, place labels, draw keep-out
@@ -81,6 +82,7 @@ Map controls (right): zoom, **0** fit, **F** follow robot, layers.
 | `1`–`4` | Drive · Map · Label · Command |
 | `W A S D` / arrows | Drive (Drive and Map modes); release to stop |
 | `C` | Swap camera and map |
+| `+` `−` `0` | Zoom in / out / reset the view in front (map or camera) |
 | `/` · `M` | Focus the command box · speak a command |
 | `?` | All shortcuts |
 
