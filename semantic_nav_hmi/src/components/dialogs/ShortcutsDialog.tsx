@@ -43,6 +43,16 @@ const GROUPS: { title: string; rows: [string[], string][] }[] = [
     ],
   },
   {
+    title: '3D view (simulation camera)',
+    rows: [
+      [['Drag'], 'Pan'],
+      [['Shift-drag', 'Middle-drag'], 'Orbit'],
+      [['Scroll', 'Right-drag'], 'Zoom toward the pointer'],
+      [['Q', 'E'], 'Orbit left / right'],
+      [['Double-click', '0'], 'Reset the view'],
+    ],
+  },
+  {
     title: 'Command',
     rows: [
       [['/'], 'Focus the command box'],

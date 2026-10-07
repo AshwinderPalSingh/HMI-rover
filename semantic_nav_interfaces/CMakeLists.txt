@@ -20,6 +20,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/KeepoutZone.msg"
   "msg/KeepoutZoneArray.msg"
   "msg/SystemStatus.msg"
+  "msg/ViewerCamera.msg"
+  "msg/ViewerCameraState.msg"
   "srv/AddKeepoutZone.srv"
   "srv/RemoveKeepoutZone.srv"
   "srv/RemoveZoneGroup.srv"

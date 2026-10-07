@@ -13,6 +13,7 @@ SLAM Toolbox and Nav2 handle mapping and navigation; a custom costmap layer turn
 | [`semantic_nav_hmi`](semantic_nav_hmi/) | Operator console — React + TypeScript web app served by the robot |
 | [`semantic_nav_bringup`](semantic_nav_bringup/) | Semantic nodes (label DB, intent parser, target resolver, dialogue manager, navigation executor), teleop guard, console server, launch |
 | [`semantic_keepout_layer`](semantic_keepout_layer/) | Nav2 costmap plugin for runtime keep-out zones |
+| [`semantic_nav_gazebo`](semantic_nav_gazebo/) | Gazebo plugin behind the console's 3D view: an orbit camera that follows the robot |
 | [`semantic_nav_interfaces`](semantic_nav_interfaces/) | Messages and services |
 | [`basic_mobile_robot`](basic_mobile_robot/) | Simulated robot, Gazebo world, map, Nav2 parameters |
 

@@ -19,6 +19,8 @@ npm run setup                 # downloads headless Chrome into ./browsers
 ```
 
 Requires the workspace to be built and the Python packages `numpy`, `opencv-python` and `Pillow`.
+Chrome runs on the GPU through Vulkan when there is one, as the console's WebGL picture would in an operator's
+browser; without a GPU the console falls back to a 2D canvas and the 3D-view prediction check is skipped.
 
 ## Suites
 
@@ -35,7 +37,7 @@ Requires the workspace to be built and the Python packages `numpy`, `opencv-pyth
 | `s11_responsive` | 1024×768, phone and 1920×1080 layouts without overflow |
 | `s12_perf_a11y` | Main-thread load when idle and with live camera; accessible names on every control |
 | `s13_slam` | SLAM detection, live map growth, saving the pose graph and occupancy grid |
-| `s14_view_controls` | Camera zoom/pan (wheel, keys, double-click), moving and resizing the picture-in-picture, persistence, map zoom |
+| `s14_view_controls` | 3D view: fills the stage, scroll/drag/Shift-drag/middle-drag/right-drag, Q/E, follow-heading toggle without a jump, reset — each checked on `/viewer_camera/state` — and the picture answering the pointer within two display frames; digital zoom on another camera (test pattern); moving, resizing, persisting and swapping the picture-in-picture; map zoom |
 
 Run a single suite against an already running stack: `./stack_start.sh`, then
 `CHROME=… node browser.mjs &` and `node step.mjs s06_labels.mjs`; stop with `./stack_stop.sh`.

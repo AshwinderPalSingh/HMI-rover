@@ -18,8 +18,10 @@ export default async ({ page, sleep, check, shot, log }) => {
   check('camera re-subscribes to the new topic from Settings', /640×360/.test(badge), badge);
   // sample the four quadrants on the canvas
   const px = await page.evaluate(() => {
-    const c = document.querySelector('.stage__primary canvas');
-    const ctx = c.getContext('2d');
+    const g = document.querySelector('.stage__primary .cameraview canvas');
+    // WebGL or 2D: read it back through a 2D copy
+    const c = document.createElement('canvas'); c.width = g.width; c.height = g.height;
+    const ctx = c.getContext('2d'); ctx.drawImage(g, 0, 0);
     // the frame is letterboxed (contain): compute drawn rect
     const s = Math.min(c.width / 640, c.height / 360);
     const w = 640 * s, h = 360 * s, x0 = (c.width - w) / 2, y0 = (c.height - h) / 2;

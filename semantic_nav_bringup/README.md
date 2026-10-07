@@ -13,7 +13,7 @@ dynamic keep-out costmap layer, and a web **operator console**.
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │ Operator console (React + TypeScript, served by hmi_server :8080)    │
-│  Camera · 2D map · Teleop · Labels · Keep-out zones · Commands       │
+│  3D view · 2D map · Teleop · Labels · Keep-out zones · Commands      │
 │  System health · Event log · STOP                                    │
 └──────────────────────────────┬───────────────────────────────────────┘
                                │ WebSocket (rosbridge :9090, JSON + CBOR)
@@ -48,6 +48,7 @@ dynamic keep-out costmap layer, and a web **operator console**.
 |---------|------|-------------|
 | `semantic_nav_interfaces` | ROS 2 (C++) | Custom msg/srv definitions |
 | `semantic_keepout_layer` | ROS 2 (C++) | Nav2 costmap plugin — dynamic keep-out zones |
+| `semantic_nav_gazebo` | ROS 2 (C++) | Gazebo plugin — orbit camera behind the console's 3D view |
 | `semantic_nav_bringup` | ROS 2 (Python) | Backend nodes, teleop guard, console server, launch files |
 | `semantic_nav_hmi` | Web (React + TS) | Operator console — see [its README](../semantic_nav_hmi/README.md) |
 | `basic_mobile_robot` | ROS 2 | Simulated robot, world, maps and Nav2 parameters |
@@ -72,7 +73,7 @@ npm install && npm run build          # operator console → dist/
 
 cd ~/dev_ws
 colcon build --symlink-install --packages-select \
-  semantic_nav_interfaces semantic_keepout_layer semantic_nav_bringup
+  semantic_nav_interfaces semantic_keepout_layer semantic_nav_gazebo semantic_nav_bringup basic_mobile_robot
 source install/setup.bash
 ```
 
@@ -157,7 +158,7 @@ Natural language → structured JSON via Gemini (`google-genai` SDK, `gemini-3.5
   `avoid_zone` during navigation → ALLOW (costmap-only, triggers replan)
 
 ### Operator Console
-See [semantic_nav_hmi/README.md](../semantic_nav_hmi/README.md): camera, live map with laser/path/zones,
+See [semantic_nav_hmi/README.md](../semantic_nav_hmi/README.md): a 3D view navigable like the Gazebo GUI, live map with laser/path/zones,
 map tools, navigation progress for any goal, label and zone management, voice, system health, event log,
 keyboard shortcuts, responsive down to phones. Teleop is protected by `teleop_guard`, which stops the base
 if the browser's command stream drops.
@@ -172,6 +173,8 @@ if the browser's command stream drops.
 | `teleop_guard` | node | Forwards and clamps teleop; publishes zero if the stream stops for 0.5 s |
 | `hmi_server` | node | Serves `semantic_nav_hmi/dist` and `/hmi-config.json` |
 | `rosapi` | node | Node/topic introspection for the console's System panel |
+| `/viewer_camera/command` | `semantic_nav_interfaces/ViewerCamera` | Console → orbit camera (simulation): azimuth, elevation, distance, target offset, follow heading |
+| `/viewer_camera/state` | `semantic_nav_interfaces/ViewerCameraState`, latched | The orbit camera's view, stamped with the sim time it took effect (frames are matched to it) |
 
 The original per-entry `/labels` and `/keepout_zones` topics are still published.
 
@@ -215,3 +218,4 @@ All tunable backend parameters are in `config/semantic_nav_params.yaml`:
 - [ ] Persistent keep-out zone storage
 - [ ] Offline LLM mode (Ollama/llama.cpp)
 - [x] Camera feed in the web UI
+- [x] Gazebo-style 3D view (orbit, pan, zoom) in the web UI

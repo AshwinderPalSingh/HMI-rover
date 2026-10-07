@@ -18,6 +18,8 @@ export const TYPES = {
   serializeMap: 'slam_toolbox/srv/SerializePoseGraph',
   labelArray: 'semantic_nav_interfaces/msg/LabelArray',
   zoneArray: 'semantic_nav_interfaces/msg/KeepoutZoneArray',
+  viewerCamera: 'semantic_nav_interfaces/msg/ViewerCamera',
+  viewerState: 'semantic_nav_interfaces/msg/ViewerCameraState',
   dialogue: 'semantic_nav_interfaces/msg/DialogueEvent',
   addLabel: 'semantic_nav_interfaces/srv/AddLabel',
   updateLabel: 'semantic_nav_interfaces/srv/UpdateLabel',
@@ -56,6 +58,11 @@ export const NAMES = {
   getTime: '/rosapi/get_time',
   /** loopback topic for measuring the real browser → rosbridge → DDS → browser round trip */
   ping: '/hmi/ping',
+  /** orbit camera of the simulated 3D view (semantic_nav_gazebo viewer camera plugin) */
+  viewerCommand: '/viewer_camera/command',
+  viewerState: '/viewer_camera/state',
+  /** the picture that orbit camera produces — the default camera topic */
+  viewerImage: '/chase_camera/image_raw/compressed',
 } as const;
 
 /** Which node provides a service, for actionable error messages. */

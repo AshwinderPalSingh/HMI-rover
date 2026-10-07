@@ -16,9 +16,9 @@ export default async ({ page, sleep, check, log }) => {
   };
   const mapIdle = await busy('2');
   log(`Map mode idle: main thread ${mapIdle.pct.toFixed(1)}% (script ${mapIdle.script.toFixed(1)}%), heap ${mapIdle.heapMB.toFixed(0)} MB`);
-  check('map mode, robot idle: main thread < 25% (software-rendered headless)', mapIdle.pct < 25, `${mapIdle.pct.toFixed(1)}%`);
+  check('map mode, robot idle: main thread < 25%', mapIdle.pct < 25, `${mapIdle.pct.toFixed(1)}%`);
   const drive = await busy('1');
-  log(`Drive mode (15 fps camera): main thread ${drive.pct.toFixed(1)}% (script ${drive.script.toFixed(1)}%), heap ${drive.heapMB.toFixed(0)} MB`);
+  log(`Drive mode (live 3D view): main thread ${drive.pct.toFixed(1)}% (script ${drive.script.toFixed(1)}%), heap ${drive.heapMB.toFixed(0)} MB`);
   check('drive mode with live camera: main thread < 40%', drive.pct < 40, `${drive.pct.toFixed(1)}%`);
 
   // accessibility: every interactive element has an accessible name

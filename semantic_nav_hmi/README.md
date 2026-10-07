@@ -8,9 +8,14 @@ keep-out zones — from any browser on the robot's network. No installs on the o
 
 ## Highlights
 
-- **Four modes, one screen** — Drive · Map · Label · Command, each with the right view (camera or map)
+- **Four modes, one screen** — Drive · Map · Label · Command, each with the right view (3D view or map)
   in front and the other as picture-in-picture. Drag the picture-in-picture anywhere, resize it from its
-  corner, click it to swap. The camera can be zoomed (wheel, pinch, + / −) and dragged around.
+  corner, click it to swap.
+- **3D view you can fly around, like the Gazebo GUI** — drag to pan, Shift-drag or middle-drag to orbit,
+  scroll or right-drag to zoom toward the pointer, double-click to reset; the view follows the robot,
+  turning with it or staying world-fixed. The picture answers the mouse within a display frame: while the
+  simulator's frames are on their way (~0.1 s), the last one is re-projected on the GPU to the view you're
+  asking for. Real-robot cameras are shown whole and can be zoomed digitally.
 - **Live 2D map** — occupancy grid, robot footprint from TF, laser returns, Nav2's planned path, goal marker,
   labelled places and hatched keep-out zones. Pan, zoom, pinch, follow robot, layers.
 - **Map tools** — click-and-drag navigation goals with heading, AMCL pose estimate, place labels, draw keep-out
@@ -41,7 +46,7 @@ npm install
 npm run build                      # → dist/, served by hmi_server_node
 
 cd ~/dev_ws
-colcon build --symlink-install --packages-select semantic_nav_interfaces semantic_keepout_layer semantic_nav_bringup
+colcon build --symlink-install --packages-select semantic_nav_interfaces semantic_keepout_layer semantic_nav_gazebo semantic_nav_bringup basic_mobile_robot
 source install/setup.bash
 ros2 launch semantic_nav_bringup semantic_nav.launch.py        # add slam:=True to build a new map
 ```
@@ -74,6 +79,26 @@ Map tools (left palette): **V** select & pan · **G** goal (drag sets heading) �
 **L** place label · **K** keep-out polygon (Enter or click the first corner to finish, Backspace undo, Esc cancel).
 Map controls (right): zoom, **0** fit, **F** follow robot, layers.
 
+### 3D view
+
+In simulation the camera view is an orbit camera in the Gazebo world (`semantic_nav_gazebo`), steered from
+the console with the Gazebo GUI's mouse controls:
+
+| Mouse / touch | Action |
+|---|---|
+| Drag · one finger | Pan across the ground |
+| Shift-drag · middle-drag · two-finger twist or slide | Orbit around the robot (the pivot is marked) |
+| Scroll · right-drag · pinch | Zoom toward the pointer |
+| Double-click | Reset the view |
+
+Buttons on the right: zoom, orbit left/right (**Q** / **E**), *turn with the robot* (chase view) or keep the
+view world-fixed, and reset (**0**). With any other camera topic the view shows that camera whole, with digital
+zoom (wheel, pinch, + / −) and drag-to-look-around.
+
+The re-projection treats the robot as an upright cylinder, the ground as a plane and everything else as a
+distant wall, so the robot and the ground stay right while the real frame catches up; it needs hardware
+WebGL and is skipped on software rendering.
+
 ### Keyboard shortcuts
 
 | Key | Action |
@@ -83,6 +108,7 @@ Map controls (right): zoom, **0** fit, **F** follow robot, layers.
 | `W A S D` / arrows | Drive (Drive and Map modes); release to stop |
 | `C` | Swap camera and map |
 | `+` `−` `0` | Zoom in / out / reset the view in front (map or camera) |
+| `Q` `E` | Orbit the 3D view left / right |
 | `/` · `M` | Focus the command box · speak a command |
 | `?` | All shortcuts |
 
@@ -106,7 +132,8 @@ Everything goes through rosbridge 2.x over one WebSocket (roslibjs 2, bundled).
 |---|---|---|
 | Robot pose | `/tf`, `/tf_static` | In-browser TF tree: `map → odom → base_footprint` (falls back to odom if not localized) |
 | Map | `/map` (OccupancyGrid) | CBOR binary, latched QoS; JSON fallback if rosbridge can't send it as one message |
-| Camera | `/chase_camera/image_raw/compressed` | CBOR, ≤15 fps, freshest frame only, decoded off the main thread |
+| Camera | `/chase_camera/image_raw/compressed` | CBOR, ≤30 fps, freshest frame only, decoded off the main thread, drawn with WebGL |
+| 3D view | `/viewer_camera/command`, `/viewer_camera/state` (latched) | Orbit camera in Gazebo; state stamps match frames to the view they show |
 | Laser, path, velocity | `/scan`, `/plan`, `/odometry/filtered` | Throttled; laser transformed into the map frame |
 | Localization quality | `/amcl_pose` | Covariance → ± position uncertainty |
 | Navigation | `/navigate_to_pose` action, `…/_action/status`, `…/_action/feedback`, `…/_action/cancel_goal` | Goals from any client are shown; STOP cancels all |
@@ -125,7 +152,8 @@ src/
   ros/         bridge.ts (connection, subscriptions, services, actions), app.ts (all wiring and operator
                commands), teleop.ts, tf.ts, navstate.ts, names.ts, types.ts
   map/         MapView.tsx (interaction), renderer.ts (canvas drawing), viewport.ts, occupancy.ts
-  camera/      CameraView.tsx
+  camera/      CameraView.tsx (feed, interaction), picture.ts (WebGL drawing and re-projection),
+               orbit.ts (orbit-camera maths), useOrbit.ts (link to the Gazebo orbit camera)
   components/  TopBar, Stage, SidePanel, panels/, dialogs/, ui/ primitives
   state/       store.ts (zustand app state), live.ts (high-rate data, bypasses React), settings.ts
   styles/      tokens.css (design tokens), base.css, app.css
@@ -152,3 +180,4 @@ replies. When served by `hmi_server_node`, the console reads `/hmi-config.json` 
 | Commands get *No response from the command pipeline* | `intent_parser_node`, `target_resolver_node` or `dialogue_manager_node` isn't running (System panel). |
 | Voice button disabled | Voice input needs Chrome/Edge on `localhost` or HTTPS. Typed commands always work. |
 | Saving the pose graph fails | slam_toolbox writes under `$SNAP_COMMON` when it is set; the launch file unsets it. |
+| The 3D view shows *Live* instead of *3D view* and can only zoom digitally | The orbit camera plugin isn't loaded: rebuild `semantic_nav_gazebo` and restart the launch (the world loads it). |

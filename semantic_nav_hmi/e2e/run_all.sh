@@ -28,8 +28,8 @@ pattern() {
 
 echo "== localization (AMCL) =="; ./stack_stop.sh >/dev/null; ./stack_start.sh >/dev/null; sleep 12
 for s in s01_open s02_teleop s05_reconnect_cbor s06_labels s08_zones s09_commands; do run $s; done
-pattern; sleep 3; run s10_settings; kill $PATTERN 2>/dev/null
-run s11_responsive; run s12_perf_a11y; run s14_view_controls
+pattern; sleep 3; run s10_settings; run s14_view_controls; kill $PATTERN 2>/dev/null
+run s11_responsive; run s12_perf_a11y
 
 echo "== navigation (fresh stack, robot at spawn) =="; ./stack_stop.sh >/dev/null; ./stack_start.sh >/dev/null; sleep 12
 run s07_nav

@@ -119,6 +119,12 @@ function onKeyDown(e: KeyboardEvent) {
     case 'c':
       s.swapViews();
       break;
+    case 'q':
+    case 'e':
+      if (s.primary === 'camera') {
+        window.dispatchEvent(new CustomEvent('camera-command', { detail: key === 'q' ? 'rotate-left' : 'rotate-right' }));
+      }
+      break;
     case '?':
       s.patch({ dialog: 'shortcuts' });
       break;
