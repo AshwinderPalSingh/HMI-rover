@@ -21,13 +21,13 @@ import { CANVAS_ICONS } from './canvasIcons';
 import { gridStep, visibleBounds, worldToScreen, type Size, type View } from './viewport';
 
 export const MAP_COLORS = {
-  bg: '#0d1015',
-  grid: 'rgba(232, 236, 243, 0.045)',
-  gridMajor: 'rgba(232, 236, 243, 0.10)',
+  bg: '#0f0f0f',
+  grid: 'rgba(255, 255, 255, 0.045)',
+  gridMajor: 'rgba(255, 255, 255, 0.10)',
   robot: '#3987e5',
-  robotStale: '#5d6678',
+  robotStale: '#666666',
   path: '#3987e5',
-  under: 'rgba(5, 7, 10, 0.6)',
+  under: 'rgba(0, 0, 0, 0.6)',
   label: '#199e70',
   labelFill: 'rgba(25, 158, 112, 0.10)',
   labelStroke: 'rgba(25, 158, 112, 0.70)',
@@ -35,10 +35,10 @@ export const MAP_COLORS = {
   zone: '#d03b3b',
   zoneFill: 'rgba(208, 59, 59, 0.14)',
   zoneHatch: 'rgba(208, 59, 59, 0.42)',
-  ink: '#e8ecf3',
-  inkMuted: '#a6afbf',
-  halo: 'rgba(11, 13, 18, 0.92)',
-  chip: 'rgba(13, 16, 21, 0.88)',
+  ink: '#ededed',
+  inkMuted: '#ababab',
+  halo: 'rgba(19, 19, 19, 0.92)',
+  chip: 'rgba(19, 19, 19, 0.88)',
 };
 
 const FONT = '500 12px Inter, "Inter Variable", system-ui, sans-serif';
@@ -498,7 +498,7 @@ export function renderScene(ctx: CanvasRenderingContext2D, sc: Scene): void {
     const a = S(d.from.x, d.from.y);
     ctx.beginPath();
     ctx.arc(a.x, a.y, 7, 0, Math.PI * 2);
-    ctx.fillStyle = d.tool === 'goal' ? 'rgba(57, 135, 229, 0.3)' : 'rgba(232, 236, 243, 0.25)';
+    ctx.fillStyle = d.tool === 'goal' ? 'rgba(57, 135, 229, 0.3)' : 'rgba(237, 237, 237, 0.25)';
     ctx.fill();
     ctx.lineWidth = 2;
     ctx.strokeStyle = color;

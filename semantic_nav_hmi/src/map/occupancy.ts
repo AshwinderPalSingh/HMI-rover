@@ -8,9 +8,9 @@
  */
 
 export const MAP_PALETTE = {
-  unknown: [13, 16, 21] as const, // #0d1015
-  free: [26, 31, 40] as const, // #1a1f28 — validated overlay surface
-  occupied: [200, 208, 220] as const, // #c8d0dc
+  unknown: [15, 15, 15] as const, // #0f0f0f
+  free: [30, 30, 30] as const, // #1e1e1e — validated overlay surface
+  occupied: [210, 210, 210] as const, // #d2d2d2
 };
 
 const littleEndian = new Uint8Array(new Uint32Array([0x01020304]).buffer)[0] === 0x04;

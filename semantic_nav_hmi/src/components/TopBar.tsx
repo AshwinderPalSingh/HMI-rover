@@ -151,9 +151,9 @@ export function TopBar() {
     <header className="topbar">
       <div className="brand">
         <svg viewBox="0 0 64 64" width="26" height="26" aria-hidden>
-          <rect width="64" height="64" rx="14" fill="#171b24" />
+          <rect width="64" height="64" rx="14" fill="#1f1f1f" />
           <path d="M32 12 L48 50 L32 41 L16 50 Z" fill="#3987e5" />
-          <circle cx="32" cy="30" r="4" fill="#e8ecf3" />
+          <circle cx="32" cy="30" r="4" fill="#ededed" />
         </svg>
         <div className="brand__text">
           <span className="brand__name">Semantic Nav</span>

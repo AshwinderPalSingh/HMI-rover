@@ -1,6 +1,6 @@
 /*
- * Design tokens — dark "control room" palette.
- * Contrast verified (WCAG): ink-3 on panel 5.1:1, ink-2 8.3:1, accent 6.6:1,
+ * Design tokens — neutral dark palette built on #131313.
+ * Contrast verified (WCAG): ink-3 on panel 5.5:1, ink-2 8.1:1, accent 6.7:1,
  * white on accent-strong 4.8:1, white on critical-strong 5.5:1.
  * Status colours are reserved for state and always ship with icon + text.
  */
@@ -8,19 +8,19 @@
   color-scheme: dark;
 
   /* surfaces */
-  --bg-0: #0b0d12;
-  --bg-1: #11141b;
-  --bg-2: #171b24;
-  --bg-3: #1e2330;
-  --bg-4: #262c3a;
-  --stage: #07090c;
-  --line: #222836;
-  --line-strong: #313949;
+  --bg-0: #0d0d0d;
+  --bg-1: #131313;
+  --bg-2: #1b1b1b;
+  --bg-3: #242424;
+  --bg-4: #2e2e2e;
+  --stage: #0a0a0a;
+  --line: #262626;
+  --line-strong: #353535;
 
   /* ink */
-  --ink-1: #e8ecf3;
-  --ink-2: #a6afbf;
-  --ink-3: #7d879a;
+  --ink-1: #ededed;
+  --ink-2: #ababab;
+  --ink-3: #8c8c8c;
 
   /* interactive accent */
   --accent: #5b9bff;
