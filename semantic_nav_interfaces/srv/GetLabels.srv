@@ -1,0 +1,7 @@
+# Query labels from the database
+string map_version                   # Optional filter; empty = all versions
+string semantic_type                 # Optional filter; empty = all types
+---
+semantic_nav_interfaces/LabelEntry[] labels
+bool success
+string message

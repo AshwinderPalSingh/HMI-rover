@@ -1,0 +1,9 @@
+# Update an existing label
+string label_id
+string display_name
+string[] aliases
+string semantic_type
+semantic_nav_interfaces/LabelGeometry geometry
+---
+bool success
+string message

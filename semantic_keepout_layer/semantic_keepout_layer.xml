@@ -1,0 +1,11 @@
+<library path="semantic_keepout_layer">
+  <class
+    name="semantic_keepout_layer::SemanticKeepoutLayer"
+    type="semantic_keepout_layer::SemanticKeepoutLayer"
+    base_class_type="nav2_costmap_2d::Layer">
+    <description>
+      Dynamic keepout zone layer that accepts runtime zone additions/removals via ROS 2 services.
+      Supports zone groups, TTL, and robot-inside-zone safety logic.
+    </description>
+  </class>
+</library>

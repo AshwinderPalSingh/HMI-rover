@@ -1,0 +1,10 @@
+# Add a new label to the database
+string display_name
+string[] aliases
+string semantic_type
+semantic_nav_interfaces/LabelGeometry geometry
+string map_version
+---
+string label_id
+bool success
+string message

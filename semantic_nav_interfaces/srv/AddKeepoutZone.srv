@@ -1,0 +1,10 @@
+# Add a keepout zone to the dynamic costmap layer
+geometry_msgs/Polygon zone
+string reason
+string zone_group_id
+string duration                      # "session", "permanent", "one_shot"
+float64 ttl_seconds                  # For one_shot: seconds until auto-expire (0 = no expiry)
+---
+string zone_id
+bool success
+string message

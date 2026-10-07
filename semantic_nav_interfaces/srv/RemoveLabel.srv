@@ -1,0 +1,5 @@
+# Remove a label from the database
+string label_id
+---
+bool success
+string message

@@ -1,0 +1,29 @@
+# Semantic Navigation System Parameters
+# All tunable parameters for the backend nodes
+
+label_db_node:
+  ros__parameters:
+    db_path: "~/.semantic_nav/labels.db"
+    current_map_version: ""
+
+intent_parser_node:
+  ros__parameters:
+    gemini_api_key: ""  # Set your API key here or via env var
+    model_name: "gemini-2.0-flash"
+
+target_resolver_node:
+  ros__parameters:
+    model_name: "all-MiniLM-L6-v2"
+    epsilon: 0.05  # Similarity margin for ambiguity detection
+
+dialogue_manager_node:
+  ros__parameters:
+    disambiguation_timeout: 15.0  # Seconds to wait for disambiguation response
+    max_reprompts: 1  # Max re-asks before cancelling
+
+# rosbridge configuration
+rosbridge_server:
+  ros__parameters:
+    port: 9090
+    address: ""
+    retry_startup_delay: 5.0

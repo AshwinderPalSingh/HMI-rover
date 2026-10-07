@@ -1,0 +1,8 @@
+# Trigger map save from SLAM Toolbox
+string map_name                      # Name for the saved map file
+string save_directory                # Directory to save into (empty = default)
+---
+bool success
+string map_path                      # Full path to saved map files
+string map_version                   # Version identifier for this map
+string message

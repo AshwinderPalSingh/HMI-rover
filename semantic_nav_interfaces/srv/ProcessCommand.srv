@@ -1,0 +1,9 @@
+# Process a full natural language command end-to-end
+string command_text
+---
+semantic_nav_interfaces/NavigationIntent intent
+string dialogue_question             # Non-empty if disambiguation needed
+string[] dialogue_options            # Options for disambiguation
+bool requires_disambiguation
+bool success
+string message

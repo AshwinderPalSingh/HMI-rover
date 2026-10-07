@@ -1,0 +1,6 @@
+# Remove all keepout zones in a group (e.g., "avoid all houses" → remove group)
+string zone_group_id
+---
+int32 zones_removed
+bool success
+string message

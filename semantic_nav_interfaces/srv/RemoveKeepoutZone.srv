@@ -1,0 +1,5 @@
+# Remove a single keepout zone by ID
+string zone_id
+---
+bool success
+string message

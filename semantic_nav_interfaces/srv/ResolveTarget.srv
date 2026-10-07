@@ -1,0 +1,9 @@
+# Resolve a target string to matching labels using embedding similarity
+string target_text
+bool is_category                     # If true, match by semantic_type instead
+---
+semantic_nav_interfaces/LabelEntry[] matches
+float64[] scores                     # Similarity scores for each match
+bool is_ambiguous                    # True if top-2 scores are within epsilon
+bool success
+string message
