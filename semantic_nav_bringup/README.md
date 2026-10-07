@@ -99,7 +99,7 @@ echo 'export GEMINI_API_KEY="your-key"' >> ~/.bashrc && source ~/.bashrc
 ```
 
 The intent parser logs `Intent Parser ready (LLM: gemini-3.5-flash-lite)` when it is active. Without a key, or
-if a request fails or times out (8 s), it answers with the rule-based parser.
+if a request fails or times out (15 s), it answers with the rule-based parser.
 
 ## Usage Workflow
 
@@ -190,7 +190,7 @@ All tunable backend parameters are in `config/semantic_nav_params.yaml`:
 |-----------|---------|-------------|
 | `gemini_api_key` | `""` | Fallback only — prefer the `GEMINI_API_KEY` environment variable |
 | `model_name` | `gemini-3.5-flash-lite` | LLM model for intent parsing |
-| `request_timeout` | `8.0` | Seconds before falling back to rule-based parsing |
+| `request_timeout` | `15.0` | Seconds before falling back to rule-based parsing |
 | `epsilon` | `0.05` | Similarity margin for ambiguity |
 | `disambiguation_timeout` | `15.0` | Seconds before timeout |
 | `max_reprompts` | `1` | Max re-asks before cancelling |

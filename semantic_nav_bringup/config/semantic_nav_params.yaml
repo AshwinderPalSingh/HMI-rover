@@ -12,7 +12,7 @@ intent_parser_node:
     # This file is in a public repository — never put a real key here.
     gemini_api_key: ""
     model_name: "gemini-3.5-flash-lite"   # current low-latency model (gemini-2.0-flash was shut down 2026-06-01)
-    request_timeout: 8.0                  # seconds; on timeout or error the rule-based parser answers
+    request_timeout: 15.0                 # seconds (API minimum 10); on timeout or error the rule-based parser answers
 
 target_resolver_node:
   ros__parameters:

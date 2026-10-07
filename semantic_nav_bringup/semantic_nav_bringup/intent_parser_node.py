@@ -59,7 +59,7 @@ class IntentParserNode(Node):
         # Parameters
         self.declare_parameter('gemini_api_key', '')
         self.declare_parameter('model_name', 'gemini-3.5-flash-lite')
-        self.declare_parameter('request_timeout', 8.0)  # seconds
+        self.declare_parameter('request_timeout', 15.0)  # seconds; the Gemini API rejects < 10 s
 
         # Same precedence as the Gemini SDK: GOOGLE_API_KEY, then GEMINI_API_KEY
         self.api_key = (
@@ -101,7 +101,7 @@ class IntentParserNode(Node):
         try:
             return genai.Client(
                 api_key=api_key,
-                http_options=types.HttpOptions(timeout=int(timeout_s * 1000)),
+                http_options=types.HttpOptions(timeout=int(max(timeout_s, 10.0) * 1000)),
             )
         except Exception as e:
             self.get_logger().error(f'Could not create the Gemini client ({e}); using rule-based parsing.')
