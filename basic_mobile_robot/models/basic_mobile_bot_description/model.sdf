@@ -34,6 +34,36 @@
         <emissive>0.0 0.0 0.0 1.0</emissive>
       </material>
     </visual>
+    <!-- Chase camera mounted directly on base_link. It used to sit on its own
+         0.001 kg link on a fixed joint, which is numerically unstable in ODE: the
+         link tumbled and most frames showed only the grey background.
+         Positive pitch looks down over the robot (a negative one pointed at the sky). -->
+    <sensor name="chase_camera" type="camera">
+      <pose>-1.5 0 0.9 0 0.4 0</pose>
+      <always_on>true</always_on>
+      <update_rate>15</update_rate>
+      <visualize>false</visualize>
+      <camera>
+        <horizontal_fov>1.5708</horizontal_fov>
+        <image>
+          <width>1280</width>
+          <height>720</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.1</near>
+          <far>100</far>
+        </clip>
+      </camera>
+      <plugin name="camera_plugin" filename="libgazebo_ros_camera.so">
+        <ros>
+          <remapping>~/image_raw:=/chase_camera/image_raw</remapping>
+          <remapping>~/camera_info:=/chase_camera/camera_info</remapping>
+        </ros>
+        <camera_name>chase_camera</camera_name>
+        <frame_name>camera_link</frame_name>
+      </plugin>
+    </sensor>
   </link>
 
   <!-- *********************** IMU SENSOR SETUP **************************  -->
@@ -418,51 +448,7 @@
   <!-- *********************** CHASE CAMERA *****************************  -->
   <!-- Mounted behind and above robot, looking forward — streams to web UI -->
   
-  <link name="camera_link">
-    <pose>-1.5 0 1.0 0 -0.4 0</pose>
-    <inertial>
-      <mass>0.001</mass>
-      <inertia>
-        <ixx>0.0000001</ixx>
-        <ixy>0</ixy>
-        <ixz>0</ixz>
-        <iyy>0.0000001</iyy>
-        <iyz>0</iyz>
-        <izz>0.0000001</izz>
-      </inertia>
-    </inertial>
-    
-    <sensor name="chase_camera" type="camera">
-      <always_on>true</always_on>
-      <update_rate>15</update_rate>
-      <visualize>false</visualize>
-      <camera>
-        <horizontal_fov>1.5708</horizontal_fov>
-        <image>
-          <width>1280</width>
-          <height>720</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.1</near>
-          <far>100</far>
-        </clip>
-      </camera>
-      <plugin name="camera_plugin" filename="libgazebo_ros_camera.so">
-        <ros>
-          <remapping>~/image_raw:=/chase_camera/image_raw</remapping>
-          <remapping>~/camera_info:=/chase_camera/camera_info</remapping>
-        </ros>
-        <camera_name>chase_camera</camera_name>
-        <frame_name>camera_link</frame_name>
-      </plugin>
-    </sensor>
-  </link>
   
-  <joint name="camera_joint" type="fixed">
-    <parent>base_link</parent>
-    <child>camera_link</child>
-  </joint>
   
   </model>
 </sdf>
