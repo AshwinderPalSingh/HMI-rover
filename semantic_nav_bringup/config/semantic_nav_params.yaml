@@ -8,8 +8,11 @@ label_db_node:
 
 intent_parser_node:
   ros__parameters:
-    gemini_api_key: ""  # Set your API key here or via env var
-    model_name: "gemini-2.0-flash"
+    # Leave empty: export GEMINI_API_KEY in the shell that runs the launch file instead.
+    # This file is in a public repository — never put a real key here.
+    gemini_api_key: ""
+    model_name: "gemini-3.5-flash-lite"   # current low-latency model (gemini-2.0-flash was shut down 2026-06-01)
+    request_timeout: 8.0                  # seconds; on timeout or error the rule-based parser answers
 
 target_resolver_node:
   ros__parameters:

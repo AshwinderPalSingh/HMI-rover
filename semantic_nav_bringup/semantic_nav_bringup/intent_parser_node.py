@@ -1,13 +1,19 @@
 """
 Intent Parser Node — LLM-based natural language understanding.
 
-Receives raw voice/text commands, sends them to Gemini API,
+Receives raw voice/text commands, sends them to the Gemini API (google-genai SDK),
 produces structured JSON intent: {action, target, category, duration}
 
 The LLM's ONLY job is linguistic parsing — it never resolves locations.
+Without an API key (or if the call fails) a rule-based parser is used.
+
+API key: set GEMINI_API_KEY (or GOOGLE_API_KEY) in the environment that runs the
+launch file — keep it out of version control. The gemini_api_key parameter is
+still honoured as a fallback.
 """
 
 import json
+import os
 
 import rclpy
 from rclpy.node import Node
@@ -52,10 +58,18 @@ class IntentParserNode(Node):
 
         # Parameters
         self.declare_parameter('gemini_api_key', '')
-        self.declare_parameter('model_name', 'gemini-2.0-flash')
+        self.declare_parameter('model_name', 'gemini-3.5-flash-lite')
+        self.declare_parameter('request_timeout', 8.0)  # seconds
 
-        self.api_key = self.get_parameter('gemini_api_key').get_parameter_value().string_value
+        # Same precedence as the Gemini SDK: GOOGLE_API_KEY, then GEMINI_API_KEY
+        self.api_key = (
+            os.environ.get('GOOGLE_API_KEY')
+            or os.environ.get('GEMINI_API_KEY')
+            or self.get_parameter('gemini_api_key').get_parameter_value().string_value
+        )
         self.model_name = self.get_parameter('model_name').get_parameter_value().string_value
+        timeout_s = self.get_parameter('request_timeout').get_parameter_value().double_value
+        self.client = self._make_client(self.api_key, timeout_s) if self.api_key else None
 
         # Subscribers
         self.command_sub = self.create_subscription(
@@ -65,14 +79,33 @@ class IntentParserNode(Node):
         # Publishers
         self.intent_pub = self.create_publisher(NavigationIntent, '/navigation_intent', 10)
 
-        # Check API key
-        if not self.api_key:
-            self.get_logger().warn(
-                'No Gemini API key provided! Set the gemini_api_key parameter. '
-                'Falling back to rule-based parsing.'
+        if self.client:
+            self.get_logger().info(f'Intent Parser ready (LLM: {self.model_name})')
+        else:
+            self.get_logger().info(
+                'Intent Parser ready (rule-based). For LLM parsing set GEMINI_API_KEY '
+                'and pip install google-genai.'
             )
 
-        self.get_logger().info('Intent Parser node ready')
+    def _make_client(self, api_key, timeout_s):
+        """Create the Gemini client once; None (rule-based parsing) if unavailable."""
+        try:
+            from google import genai
+            from google.genai import types
+        except ImportError:
+            self.get_logger().error(
+                'GEMINI_API_KEY is set but google-genai is not installed: '
+                'pip install google-genai. Using rule-based parsing.'
+            )
+            return None
+        try:
+            return genai.Client(
+                api_key=api_key,
+                http_options=types.HttpOptions(timeout=int(timeout_s * 1000)),
+            )
+        except Exception as e:
+            self.get_logger().error(f'Could not create the Gemini client ({e}); using rule-based parsing.')
+            return None
 
     def _command_cb(self, msg):
         """Handle incoming voice/text command."""
@@ -82,7 +115,7 @@ class IntentParserNode(Node):
 
         self.get_logger().info(f'Parsing command: "{command_text}"')
 
-        if self.api_key:
+        if self.client:
             intent = self._parse_with_llm(command_text)
         else:
             intent = self._parse_with_rules(command_text)
@@ -100,43 +133,51 @@ class IntentParserNode(Node):
         else:
             self.get_logger().warn(f'Failed to parse command: "{command_text}"')
 
+    VALID_ACTIONS = ('navigate_to', 'avoid_zone', 'clear_zone', 'cancel')
+    VALID_DURATIONS = ('session', 'permanent', 'one_shot')
+
     def _parse_with_llm(self, command_text):
-        """Parse using Gemini API."""
+        """Parse with Gemini; any failure falls back to the rule-based parser."""
+        from google.genai import types
         try:
-            import google.generativeai as genai
-
-            genai.configure(api_key=self.api_key)
-            model = genai.GenerativeModel(self.model_name)
-
-            response = model.generate_content(
-                [
-                    {'role': 'user', 'parts': [SYSTEM_PROMPT]},
-                    {'role': 'model', 'parts': ['Understood. I will output only JSON.']},
-                    {'role': 'user', 'parts': [command_text]},
-                ],
-                generation_config={
-                    'temperature': 0.1,
-                    'max_output_tokens': 200,
-                },
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=command_text,
+                config=types.GenerateContentConfig(
+                    system_instruction=SYSTEM_PROMPT,
+                    temperature=0.1,
+                    max_output_tokens=256,
+                    response_mime_type='application/json',
+                    # plain parsing, no tools: keep the SDK from probing function calling
+                    automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
+                ),
             )
-
-            # Extract JSON from response
-            text = response.text.strip()
-            # Handle potential markdown code block wrapping
+            text = (response.text or '').strip()
+            # Tolerate a markdown fence even though JSON output was requested
             if text.startswith('```'):
                 text = text.split('\n', 1)[1].rsplit('```', 1)[0].strip()
-
-            return json.loads(text)
-
-        except ImportError:
-            self.get_logger().error(
-                'google-generativeai not installed. '
-                'Run: pip install google-generativeai'
-            )
-            return self._parse_with_rules(command_text)
+            intent = self._validate(json.loads(text))
+            if intent is None:
+                raise ValueError(f'unexpected LLM output: {text[:120]}')
+            return intent
         except Exception as e:
-            self.get_logger().error(f'LLM parsing failed: {e}')
+            self.get_logger().error(f'LLM parsing failed ({e}); using rule-based parsing')
             return self._parse_with_rules(command_text)
+
+    def _validate(self, data):
+        """Normalise an LLM intent; None if it doesn't fit the schema."""
+        if not isinstance(data, dict):
+            return None
+        action = str(data.get('action', '')).strip()
+        if action not in self.VALID_ACTIONS:
+            return None
+        duration = str(data.get('duration') or 'session').strip()
+        return {
+            'action': action,
+            'target': '' if action == 'cancel' else self._clean_target(str(data.get('target', '')).lower()),
+            'is_category': bool(data.get('is_category', False)),
+            'duration': duration if duration in self.VALID_DURATIONS else 'session',
+        }
 
     @staticmethod
     def _clean_target(target):

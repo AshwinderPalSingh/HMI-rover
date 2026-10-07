@@ -60,8 +60,9 @@ dynamic keep-out costmap layer, and a web **operator console**.
 - `rosbridge_server` and `rosapi`: `sudo apt install ros-humble-rosbridge-suite`
 - `compressed_image_transport` (camera in the console): `sudo apt install ros-humble-image-transport-plugins`
 - Node.js 22 LTS (20.19+ builds the console; 22.12+ runs its unit tests)
-- Optional Python packages: `pip install google-generativeai sentence-transformers`
-  (without them the intent parser uses rules and the resolver uses substring matching)
+- Optional, for smarter command understanding: `pip install google-genai sentence-transformers`
+  plus a Gemini API key (see below). Without them the intent parser uses rules and the resolver uses
+  substring matching — every command shown below still works.
 
 ### Build
 
@@ -87,16 +88,18 @@ Then open **http://localhost:8080** (or `http://<robot-ip>:8080` from another de
 Launch arguments: `slam`, `use_sim_time`, `use_rviz` (default `True`), `headless` (no Gazebo window),
 `rosbridge_port` (9090), `hmi_port` (8080).
 
-### Set Gemini API Key (for LLM intent parsing)
+### Gemini API key (optional, for LLM intent parsing)
 
-```yaml
-# config/semantic_nav_params.yaml
-intent_parser_node:
-  ros__parameters:
-    gemini_api_key: "YOUR_API_KEY_HERE"
+1. Create a key at [Google AI Studio → API keys](https://aistudio.google.com/apikey) (free tier available).
+2. `pip install google-genai`
+3. Export it in the shell that runs the launch file — **never put it in the YAML** (this repository is public):
+
+```bash
+echo 'export GEMINI_API_KEY="your-key"' >> ~/.bashrc && source ~/.bashrc
 ```
 
-Without an API key, the intent parser falls back to rule-based parsing (works for common commands).
+The intent parser logs `Intent Parser ready (LLM: gemini-3.5-flash-lite)` when it is active. Without a key, or
+if a request fails or times out (8 s), it answers with the rule-based parser.
 
 ## Usage Workflow
 
@@ -136,7 +139,7 @@ The `SemanticKeepoutLayer` costmap plugin:
   failure), and removed zones are re-costed so their cells free up immediately
 
 ### LLM Intent Parsing
-Natural language → structured JSON via Gemini (`gemini-2.0-flash` by default):
+Natural language → structured JSON via Gemini (`google-genai` SDK, `gemini-3.5-flash-lite` by default):
 - Constrained system prompt ensures structured output
 - Rule-based fallback when no API key (articles and "all/every" are normalised, like the LLM examples)
 - The LLM does linguistic parsing only, never resolves locations
@@ -185,8 +188,9 @@ All tunable backend parameters are in `config/semantic_nav_params.yaml`:
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `gemini_api_key` | `""` | Google Gemini API key |
-| `model_name` | `gemini-2.0-flash` | LLM model for intent parsing |
+| `gemini_api_key` | `""` | Fallback only — prefer the `GEMINI_API_KEY` environment variable |
+| `model_name` | `gemini-3.5-flash-lite` | LLM model for intent parsing |
+| `request_timeout` | `8.0` | Seconds before falling back to rule-based parsing |
 | `epsilon` | `0.05` | Similarity margin for ambiguity |
 | `disambiguation_timeout` | `15.0` | Seconds before timeout |
 | `max_reprompts` | `1` | Max re-asks before cancelling |
