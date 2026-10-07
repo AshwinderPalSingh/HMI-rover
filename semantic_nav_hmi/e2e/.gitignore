@@ -1,0 +1,7 @@
+node_modules/
+browsers/
+shots/
+home/
+*.log
+ws.txt
+e2e_map.*

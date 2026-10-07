@@ -1,0 +1,14 @@
+{
+  "name": "semantic-nav-hmi-e2e",
+  "private": true,
+  "type": "module",
+  "description": "End-to-end tests: drives the operator console in headless Chrome against the real ROS 2 stack",
+  "scripts": {
+    "setup": "npx @puppeteer/browsers install chrome-headless-shell@stable --path ./browsers",
+    "test": "./run_all.sh"
+  },
+  "dependencies": {
+    "@puppeteer/browsers": "^3.2.3",
+    "puppeteer-core": "^25.12.0"
+  }
+}
